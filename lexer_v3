@@ -1,0 +1,217 @@
+#include <ctype.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// CHECAR FLUXO "e"
+// q7
+bool check_e(char sub_str[100], int pos) {
+  int length = strlen(sub_str);
+
+  for (int i = 0; i < length; i++) {
+    if (sub_str[i] == 'e') {
+      if (isdigit(sub_str[i++])) {
+        return true;
+      } else if (sub_str[i++] == '+' || sub_str[i++] == '-') {
+        for (int j = i; j < length; j++) {
+          if (isdigit(sub_str[j])) {
+            if (j == length - 1) {
+              return true;
+            } else {
+              continue;
+            }
+          } else {
+            return false;
+          }
+        }
+
+      } else if (isdigit(sub_str[i])) {
+        continue;
+      }
+    }
+  }
+  return false;
+}
+
+//   for (int i = pos+1; i < length; i++) {
+//     if (sub_str[i+1] == 'e' || sub_str[i+1] == '.'|| sub_str[i+1] == '\0') {
+//       printf("%d",sub_str[i]);
+//      return false;
+//     }
+
+//     else if (sub_str[i] == '+' || sub_str[i] == '-') {
+
+//       //i +=1;
+//       if (!(isdigit(sub_str[i++]))){
+//       printf("%d",sub_str[i]);
+//         return false;
+//       }else{
+//         return true;
+//       }
+//     }
+//     else if(!(isdigit(sub_str[i+1]))){
+//         return false;
+//       }else{
+//         return true;
+//       }
+//   }
+//   return false;
+// }
+
+bool check_dot(char sub_str[100], int pos) {
+  if (!isdigit(sub_str[pos + 1])) {
+    return false;
+  }
+
+  else {
+    return true;
+  }
+
+  for (int i = pos; i < strlen(sub_str); i++) {
+    if (!isdigit(sub_str[i])) {
+      continue;
+    }
+
+    else if (sub_str[i] == 'e') {
+      return check_e(sub_str, i);
+    }
+
+    else {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// CHECAR UM DIGITO
+bool check_digit(char sub_str[100], int pos) {
+  for (int i = pos + 1; i <= strlen(sub_str); i++) {
+    // i++;// se retirar o -2-2 roda certo, mas o 2.. pode quebrar caso nao faça
+    // j = i+1 Checar se é número
+    if (isdigit(sub_str[i])) {
+      printf("%d", sub_str[i]);
+      continue;
+    }
+
+    // Chegar a string E
+    if (sub_str[i] == 'e') {
+      return check_e(sub_str, i);
+    }
+
+    // Checar os Sinais
+    else if (sub_str[i] == '+' || sub_str[i] == '-') {
+      return false;
+    }
+
+    // Checar o .
+    else if (sub_str[i] == '.') {
+      for (int j = 1 + i; j <= strlen(sub_str);
+           j++) { // aqui o 2.. quebra por conta do j,deveria ser só i
+        if (sub_str[i] == '.') {
+          return check_dot(sub_str, i);
+        } else if (isdigit(sub_str[j])) {
+          continue;
+        }
+
+        else if (sub_str[j] == 'e') {
+          return check_e(sub_str, pos + 1);
+        }
+
+        else if (sub_str[j] == '+' || sub_str[j] == '-' || sub_str[j] == '.') {
+          return false;
+        }
+
+        return true;
+      }
+    }
+  }
+
+  return true;
+}
+
+// q10
+// CHECAR PONTO
+
+int main() {
+  char str[100];
+  bool result;
+  int aux_pos = 0;
+
+  printf("Digite a String:\n");
+  scanf("%s", str);
+
+  int k, count = 0;
+  // fgets(str, sizeof(str), stdin); // obtém a entrada do usuário
+  //  Conta o número de ocorrências de dois pontos finais ("..")
+  for (k = 0; k < strlen(str); k++) {
+    if (str[k] == '.') {
+      count++;
+    }
+  }
+  if (count >= 2) {
+    printf("Não é um número.\n");
+    return 0; // pára o programa
+  }
+
+  // primeiro if, ele checa se é digito
+  if (isdigit(str[aux_pos])) {
+    // q4
+    result = check_digit(str, aux_pos);
+
+    if (result == true) {
+      printf("e um numero!");
+    } else if (result == false) {
+      printf("nao e um numero!");
+    }
+
+    return 0;
+  }
+  // se ele for + ou - ele entra aqui
+  else if (str[aux_pos] == '+' || str[aux_pos] == '-') {
+
+    if (isdigit(str[aux_pos + 1])) {
+
+      result = check_digit(str, aux_pos);
+
+      if (result == true) {
+        printf("e um numero!");
+      } else {
+        printf("nao e um numero!");
+      }
+
+    } else if (str[aux_pos + 1] == 'e') {
+
+      printf("Não é numero");
+
+    } else if (str[aux_pos + 1] == '\0') {
+      printf("Não é numero");
+    } else if (str[aux_pos + 1] == '.') {
+
+      result = check_dot(str, aux_pos + 1);
+
+      if (result == true) {
+
+        printf("e um numero!");
+      } else {
+        printf("nao e um numero!");
+      }
+    }
+  } else if (str[aux_pos] == '.') {
+    result = check_dot(str, aux_pos);
+    if (result == true) {
+      printf("e um numero!");
+    } else {
+      printf("nao e um numero!");
+    }
+  }
+  // se ele for "e" , ele não aceita
+  else if (str[aux_pos] == 'e') {
+    printf("Não é numero");
+  } else if (str[aux_pos] == '+' || str[aux_pos] == '-') {
+    printf("Não é numero");
+  }
+  return 0;
+}
+// printf("valor: %s", str);
